@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Dagger2,依赖注入,解耦," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="转载并修改自，天天博客http://www.cnblogs.com/tiantianbyconan/p/5092525.html 原文翻译自：http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api/ 关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：http://frogermcs.git">
+<meta name="keywords" content="Dagger2,依赖注入,解耦">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dagger2-Android依赖注入框架的学习">
+<meta property="og:url" content="http://yoursite.com/2017/12/12/android/Dragger2/index.html">
+<meta property="og:site_name" content="吴政通的个人博客">
+<meta property="og:description" content="转载并修改自，天天博客http://www.cnblogs.com/tiantianbyconan/p/5092525.html 原文翻译自：http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api/ 关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：http://frogermcs.git">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-09T06:53:01.544Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dagger2-Android依赖注入框架的学习">
+<meta name="twitter:description" content="转载并修改自，天天博客http://www.cnblogs.com/tiantianbyconan/p/5092525.html 原文翻译自：http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api/ 关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：http://frogermcs.git">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/12/android/Dragger2/"/>
+
+
+
+
+
+  <title>Dagger2-Android依赖注入框架的学习 | 吴政通的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">吴政通的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">非学无以广才，非志无以成学</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'Qo3QothKswuUSHFNE2CX','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/12/android/Dragger2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吴政通">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吴政通的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Dagger2-Android依赖注入框架的学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-12T17:56:43+08:00">
+                2017-12-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/12/12/android/Dragger2/" class="leancloud_visitors" data-flag-title="Dagger2-Android依赖注入框架的学习">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转载并修改自，天天博客<br><a href="http://www.cnblogs.com/tiantianbyconan/p/5092525.html" target="_blank" rel="noopener">http://www.cnblogs.com/tiantianbyconan/p/5092525.html</a></p>
+<p>原文翻译自：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api/" target="_blank" rel="noopener">http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api/</a></p>
+<p>关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di/" target="_blank" rel="noopener">http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di/</a></p>
+<p>我们还是通过学习如何使用它，来体验它给android编程带来的优点。<br><a id="more"></a><br>这是Dagger2的API:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public @interface Component &#123;</span><br><span class="line">    Class&lt;?&gt;[] modules() default &#123;&#125;;</span><br><span class="line">    Class&lt;?&gt;[] dependencies() default &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface Subcomponent &#123;</span><br><span class="line">    Class&lt;?&gt;[] modules() default &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface Module &#123;</span><br><span class="line">    Class&lt;?&gt;[] includes() default &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface Provides &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface MapKey &#123;</span><br><span class="line">    boolean unwrapValue() default true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public interface Lazy&lt;T&gt; &#123;</span><br><span class="line">    T get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>还有在Dagger2中使用到的在JSR-330（java依赖注入的标准）中定义的其他元素：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public @interface Inject &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface Scope &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public @interface Qualifier &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这API看上去十分的简单，但这个简单的API使用起来并不简单。</p>
+<p>下面我们来学习这些API的使用</p>
+<h2 id="Inject注解"><a href="#Inject注解" class="headerlink" title="@Inject注解"></a>@Inject注解</h2><p>这个注解是Dagger2依赖注入框架(以下简称DI框架)中最重要的注解。是JSR-330标准的一部分，用来标记依赖注入框架应该提供的依赖关系，DI框架中有三种方式来提供依赖关系：<br><strong>Constructor injection构造方法注入</strong><br>@inject和类的构造方法一起使用:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class LoginActivityPresenter &#123;</span><br><span class="line">    </span><br><span class="line">    private LoginActivity loginActivity;</span><br><span class="line">    private UserDataStore userDataStore;</span><br><span class="line">    private UserManager userManager;</span><br><span class="line">    </span><br><span class="line">    @Inject</span><br><span class="line">    public LoginActivityPresenter(LoginActivity loginActivity,</span><br><span class="line">                                  UserDataStore userDataStore,</span><br><span class="line">                                  UserManager userManager) &#123;</span><br><span class="line">        this.loginActivity = loginActivity;</span><br><span class="line">        this.userDataStore = userDataStore;</span><br><span class="line">        this.userManager = userManager;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>构造方法中的所有参数都通过依赖关系图获取。<br>在构造方法中使用@Inject注解也使得这个类成为依赖关系图的一部分。<br>这也表示它可以在需要的时候被注入，如（Fields injection）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class LoginActivity extends BaseActivity &#123;</span><br><span class="line"></span><br><span class="line">    @Inject</span><br><span class="line">    LoginActivityPresenter presenter;</span><br><span class="line">   </span><br><span class="line">    //...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>（这里需要注意的是我们不能给同一个类的多个构造函数添加@Inject注解）</p>
+<p><strong>Fields injection字段注入</strong><br>@Inject来注解特定的字段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SplashActivity extends AppCompatActivity &#123;</span><br><span class="line">    </span><br><span class="line">    @Inject</span><br><span class="line">    LoginActivityPresenter presenter;</span><br><span class="line">    @Inject</span><br><span class="line">    AnalyticsManager analyticsManager;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    protected void onCreate(Bundle bundle) &#123;</span><br><span class="line">        super.onCreate(bundle);</span><br><span class="line">        getAppComponent().inject(this);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这种方式，注入过程中必须通过在我们的类中主动调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class SplashActivity extends AppCompatActivity &#123;</span><br><span class="line">    </span><br><span class="line">    //...</span><br><span class="line">    </span><br><span class="line">    @Override </span><br><span class="line">    protected void onCreate(Bundle bundle) &#123;</span><br><span class="line">        super.onCreate(bundle);</span><br><span class="line">        getAppComponent().inject(this);//Requested depenencies are injected in this moment</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这个调用之前，我们的依赖是null。<br>这里有一个限制，注入的依赖不能被private修饰。为什么呢？<br>简单解释下就是，在生成的代码中通过直接调用给他们赋值，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//This class is generated automatically by Dagger 2</span><br><span class="line">public final class SplashActivity_MembersInjector implements MembersInjector&lt;SplashActivity&gt; &#123;</span><br><span class="line">    //...</span><br><span class="line">    @Override</span><br><span class="line">    public void injectMembers(SplashActivity splashActivity) &#123;</span><br><span class="line">        if (splashActivity == null) &#123;</span><br><span class="line">            throw new NullPointerException(&quot;Cannot inject members into a null reference&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        supertypeInjector.injectMembers(splashActivity);</span><br><span class="line">        splashActivity.presenter = presenterProvider.get();</span><br><span class="line">        splashActivity.analyticsManager = analyticsManagerProvider.get();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>Methods injection方法注入</strong><br>最后一种提供依赖的方法是通过对类中的public方法使用@Inject注解：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class LoginActivityPresenter &#123;</span><br><span class="line">    </span><br><span class="line">    private LoginActivity loginActivity;</span><br><span class="line">    </span><br><span class="line">    @Inject </span><br><span class="line">    public LoginActivityPresenter(LoginActivity loginActivity) &#123;</span><br><span class="line">        this.loginActivity = loginActivity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Inject</span><br><span class="line">    public void enableWatches(Watches watches) &#123;</span><br><span class="line">        watches.register(this); //Watches instance required fully constructed LoginActivityPresenter</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所有方法的参数都通过依赖关系图获取。<br>有构造方法注入了，我们为什么还需要方法注入呢？<br>在这样一种情况下我们可能会用到，当我们需要把当前类的实例（this）作为依赖传递出去的时候，方法注入会在构造方法调用完成之后被调用，这也就保证了我们传递的this是一个构造完成的对象。</p>
+<h2 id="Module注解"><a href="#Module注解" class="headerlink" title="@Module注解"></a>@Module注解</h2><p>@Module是Dagger2API的一部分，这个注解使用来表示提供依赖的类的-从而让Dagger知道需要的类是在哪里被构建的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Module</span><br><span class="line">public class GithubApiModule &#123;</span><br><span class="line">    </span><br><span class="line">    @Provides</span><br><span class="line">    @Singleton</span><br><span class="line">    OkHttpClient provideOkHttpClient() &#123;</span><br><span class="line">        OkHttpClient okHttpClient = new OkHttpClient();</span><br><span class="line">        okHttpClient.setConnectTimeout(60 * 1000, TimeUnit.MILLISECONDS);</span><br><span class="line">        okHttpClient.setReadTimeout(60 * 1000, TimeUnit.MILLISECONDS);</span><br><span class="line">        return okHttpClient;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Provides</span><br><span class="line">    @Singleton</span><br><span class="line">    RestAdapter provideRestAdapter(Application application, OkHttpClient okHttpClient) &#123;</span><br><span class="line">        RestAdapter.Builder builder = new RestAdapter.Builder();</span><br><span class="line">        builder.setClient(new OkClient(okHttpClient))</span><br><span class="line">               .setEndpoint(application.getString(R.string.endpoint));</span><br><span class="line">        return builder.build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Provides注解"><a href="#Provides注解" class="headerlink" title="@Provides注解"></a>@Provides注解</h2><p>这个注解使用在@Module类中。在@Module类中@Provides用来标记哪些返回依赖的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Module</span><br><span class="line">public class GithubApiModule &#123;</span><br><span class="line">    </span><br><span class="line">    //...</span><br><span class="line">    </span><br><span class="line">    @Provides   //This annotation means that method below provides dependency</span><br><span class="line">    @Singleton</span><br><span class="line">    RestAdapter provideRestAdapter(Application application, OkHttpClient okHttpClient) &#123;</span><br><span class="line">        RestAdapter.Builder builder = new RestAdapter.Builder();</span><br><span class="line">        builder.setClient(new OkClient(okHttpClient))</span><br><span class="line">               .setEndpoint(application.getString(R.string.endpoint));</span><br><span class="line">        return builder.build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Component注解"><a href="#Component注解" class="headerlink" title="@Component注解"></a>@Component注解</h2><p>这个注解用来构建一个把这些东西联系到一起的接口。在这个接口中，我们定义好要获取的依赖从哪些modules或者其它Components来。同时，在这个接口中我们还需要定义可见的依赖关系图（可见的依赖即可以被注入的）以及我们可以在哪些地方注入对象。可以认为@Component就像@Module和@Inject之间的桥梁一样。<br>在下面的实例代码中使用@Component构建的接口，使用了两个Modules，并且可以注入依赖到GithubClientApplication，并且标记了三个可见的依赖:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@Singleton</span><br><span class="line">@Component(</span><br><span class="line">    modules = &#123;</span><br><span class="line">        AppModule.class,</span><br><span class="line">        GithubApiModule.class</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line">public interface AppComponent &#123;</span><br><span class="line"></span><br><span class="line">    void inject(GithubClientApplication githubClientApplication);</span><br><span class="line"></span><br><span class="line">    Application getApplication();</span><br><span class="line"></span><br><span class="line">    AnalyticsManager getAnalyticsManager();</span><br><span class="line"></span><br><span class="line">    UserManager getUserManager();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>同样@Component可以依赖其他Component，并且必须得定义生命周期（这个会在下面scoping 说到）:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@ActivityScope</span><br><span class="line">@Component(      </span><br><span class="line">    modules = SplashActivityModule.class,</span><br><span class="line">    dependencies = AppComponent.class</span><br><span class="line">)</span><br><span class="line">public interface SplashActivityComponent &#123;</span><br><span class="line">    SplashActivity inject(SplashActivity splashActivity);</span><br><span class="line"></span><br><span class="line">    SplashActivityPresenter presenter();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>@Scope注解<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@Scope</span><br><span class="line">public @interface ActivityScope &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>JSR-330标准的另外一个部分。在Dagger2中，@scope是用来定义自定义scope的注解。自定义的scope可以使得依赖区别于单例，被single-instance注解的依赖只关联到Component的生命周期（不是整个application）。所有的自定义scope做同一件事情-他们持有对象的唯一实例。自定义的scope可以尽可能快的发现图表结构的问题。</p>
+<p>先学习到这里，持续更新中… …</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Dagger2/" rel="tag"># Dagger2</a>
+          
+            <a href="/tags/依赖注入/" rel="tag"># 依赖注入</a>
+          
+            <a href="/tags/解耦/" rel="tag"># 解耦</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/11/android/AndroidAnnotations/" rel="next" title="AndroidAnnotations">
+                <i class="fa fa-chevron-left"></i> AndroidAnnotations
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/08/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMzA5My85NjU0"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">吴政通</p>
+              <p class="site-description motion-element" itemprop="description">合抱之木，生于毫末；九层之台，起于垒土；千里之行，始于足下</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Inject注解"><span class="nav-number">1.</span> <span class="nav-text">@Inject注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Module注解"><span class="nav-number">2.</span> <span class="nav-text">@Module注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Provides注解"><span class="nav-number">3.</span> <span class="nav-text">@Provides注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Component注解"><span class="nav-number">4.</span> <span class="nav-text">@Component注解</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">吴政通</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("qi9pnel7z4FUWkIt1UY6P3J3-gzGzoHsz", "1X5dp7jPK3tqbrTlNQ8D6X0x");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
