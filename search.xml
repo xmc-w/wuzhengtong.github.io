@@ -4,7 +4,7 @@
     <title>Hello World</title>
     <url>/2017/10/10/PersonalMiscellanies/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="http://wuzhengtong.top/">myBlog</a>! This is my very first post.<br>欢迎来到<a href="http://wuzhentong.top/">我的博客</a>！这是我的第一次提交。</p>
-<p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/helloword.png" alt="mark"></p>
+<p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/helloword.jpeg" alt="mark"></p>
 <a id="more"></a>
 
 <p>使用hexo + github page搭建的个人博客</p>
@@ -15,9 +15,7 @@
   <entry>
     <title>AndroidAnnotations</title>
     <url>/2017/10/11/android/AndroidaAnnotations/</url>
-    <content><![CDATA[<blockquote>
-<p>AndroidStudio中使用AndroidAnnotations</p>
-</blockquote>
+    <content><![CDATA[<p>AndroidStudio中使用AndroidAnnotations</p>
 <p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/annotations.png" alt="mark"></p>
 <a id="more"></a>
 <h2 id="Building-Project-Gradle"><a href="#Building-Project-Gradle" class="headerlink" title="Building Project Gradle"></a>Building Project Gradle</h2><p>Gradle2.3.0及以后的版本构建支持annotation processors，使用方法如下<br>project build.gradle</p>
@@ -526,9 +524,7 @@ public interface BookmarkClient &#123;
   <entry>
     <title>Android查看office文档解决方案</title>
     <url>/2018/01/11/android/Android%E9%98%85%E8%AF%BB%E6%96%87%E6%A1%A3%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<blockquote>
-<p> 在 iOS 平台上，实现移动端 Office 文档的在线阅读非常简单，只需要使用 WebView 加载网络文件的 Url 地址即可显示。<br>而在 Android 平台上，由于“高墙耸立”，Google 在国内的访问限制，导致这一简单的操作变得复杂起来，<br>开发人员不得不寻求其他解决方案，这里列举一些。</p>
-</blockquote>
+    <content><![CDATA[<p>在 iOS 平台上，实现移动端 Office 文档的在线阅读非常简单，只需要使用 WebView 加载网络文件的 Url 地址即可显示。<br>而在 Android 平台上，由于“高墙耸立”，Google 在国内的访问限制，导致这一简单的操作变得复杂起来，<br>开发人员不得不寻求其他解决方案，这里列举一些。</p>
 <p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/x5tbs.png" alt="mark"></p>
 <a id="more"></a>
 
@@ -578,13 +574,22 @@ public interface BookmarkClient &#123;
   <entry>
     <title>Dagger2-Android依赖注入框架的学习</title>
     <url>/2021/02/03/android/Dragger2/</url>
-    <content><![CDATA[<blockquote>
-<p>官方的使用文档<br><a href="https://google.github.io/dagger//">https://google.github.io/dagger//</a><br>转载并修改自，天天博客<br><a href="http://www.cnblogs.com/tiantianbyconan/p/5092525.html">http://www.cnblogs.com/tiantianbyconan/p/5092525.html</a></p>
+    <content><![CDATA[<p>通过学习如何使用它，来体验它给android编程带来的优点。</p>
+<blockquote>
+<p>官方的使用文档<br><a href="https://google.github.io/dagger//">https://google.github.io/dagger//</a></p>
 </blockquote>
 <p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/dragger2.png" alt="mark"></p>
 <a id="more"></a>
-<p>原文翻译自：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api">http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api</a><br>关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di">http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di</a><br>我们还是通过学习如何使用它，来体验它给android编程带来的优点。</p>
 <hr>
+<blockquote>
+<p>转载并修改自，天天博客<br><a href="http://www.cnblogs.com/tiantianbyconan/p/5092525.html">http://www.cnblogs.com/tiantianbyconan/p/5092525.html</a></p>
+</blockquote>
+<blockquote>
+<p>原文翻译自：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api">http://frogermcs.github.io/dependency-injection-with-dagger-2-the-api</a></p>
+</blockquote>
+<blockquote>
+<p>关于Dagger2的作用，以及依赖注入就不做介绍了，下面这边文章介绍的很好：<br><a href="http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di">http://frogermcs.github.io/dependency-injection-with-dagger-2-introdution-to-di</a></p>
+</blockquote>
 <p>这是Dagger2的API:</p>
 <pre><code>public @interface Component &#123;
     Class&lt;?&gt;[] modules() default &#123;&#125;;
