@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":false,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在 iOS 平台上，实现移动端 Office 文档的在线阅读非常简单，只需要使用 WebView 加载网络文件的 Url 地址即可显示。而在 Android 平台上，由于“高墙耸立”，Google 在国内的访问限制，导致这一简单的操作变得复杂起来，开发人员不得不寻求其他解决方案，这里列举一些。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android查看office文档解决方案">
+<meta property="og:url" content="http://example.com/2018/01/11/android/Android%E9%98%85%E8%AF%BB%E6%96%87%E6%A1%A3%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="吴政通的个人博客">
+<meta property="og:description" content="在 iOS 平台上，实现移动端 Office 文档的在线阅读非常简单，只需要使用 WebView 加载网络文件的 Url 地址即可显示。而在 Android 平台上，由于“高墙耸立”，Google 在国内的访问限制，导致这一简单的操作变得复杂起来，开发人员不得不寻求其他解决方案，这里列举一些。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/x5tbs.png">
+<meta property="article:published_time" content="2018-01-11T06:18:32.000Z">
+<meta property="article:modified_time" content="2021-06-01T08:51:41.185Z">
+<meta property="article:author" content="吴政通">
+<meta property="article:tag" content="office办公文档">
+<meta property="article:tag" content="webView">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/x5tbs.png">
+
+<link rel="canonical" href="http://example.com/2018/01/11/android/Android%E9%98%85%E8%AF%BB%E6%96%87%E6%A1%A3%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android查看office文档解决方案 | 吴政通的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">吴政通的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">非学无以广才，非志无以成学</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-时光">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时光</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/01/11/android/Android%E9%98%85%E8%AF%BB%E6%96%87%E6%A1%A3%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="吴政通">
+      <meta itemprop="description" content="合抱之木，生于毫末；九层之台，起于垒土；千里之行，始于足下">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吴政通的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android查看office文档解决方案
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-11 14:18:32" itemprop="dateCreated datePublished" datetime="2018-01-11T14:18:32+08:00">2018-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-01 16:51:41" itemprop="dateModified" datetime="2021-06-01T16:51:41+08:00">2021-06-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index"><span itemprop="name">android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p> 在 iOS 平台上，实现移动端 Office 文档的在线阅读非常简单，只需要使用 WebView 加载网络文件的 Url 地址即可显示。<br>而在 Android 平台上，由于“高墙耸立”，Google 在国内的访问限制，导致这一简单的操作变得复杂起来，<br>开发人员不得不寻求其他解决方案，这里列举一些。</p>
+</blockquote>
+<p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/x5tbs.png" alt="mark"></p>
+<a id="more"></a>
+
+<h2 id="WebView-网页显示"><a href="#WebView-网页显示" class="headerlink" title="WebView 网页显示"></a>WebView 网页显示</h2><ol>
+<li><p>借助WebView控件加载远程文档的 Url 地址即可:<br>第三方的解析服务有：Google Doc , Office Web 365 ,永中云转换 等；<br>部署解析服务端，开源方案有：PDF.js , pdf2htmlEX 等;</p>
+</li>
+<li><p>加载本地文档可以借助腾讯的浏览服务TBS实现；</p>
+<h3 id="Google-Doc"><a href="#Google-Doc" class="headerlink" title="Google Doc"></a>Google Doc</h3><p>类似 iOS ，Google 也提供了一种在线文档解析的功能，只需要按照固定的格式将远程文档的 Url 地址传给 Google 服务器，<br>即可利用 WebView 控件加载新的 Url 地址，显示即可。WebView 加载的 Url 地址格式如下：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.google.com/gview?embedded=true&amp;url=%E6%96%87%E6%A1%A3%E5%9C%B0%E5%9D%80">https://docs.google.com/gview?embedded=true&amp;url=文档地址</a></p>
+<p>文档地址设置为服务器文档地址就可以了，无需服务器和客户端的额外工作，但是国内访问需要翻墙。</p>
+<h3 id="Office-Web362"><a href="#Office-Web362" class="headerlink" title="Office Web362"></a>Office Web362</h3><p>第三方公司提供的一种 Office 文档在线预览的功能，能够实现 Microsoft、Adobe、WPS 文档的移动端和PC端在线网页访问。<br>使用简单，类似 Google Doc 访问方式，一个固定格式的链接，轻松实现：</p>
+<p><a target="_blank" rel="noopener" href="http://ow365.cn/?i=%E6%82%A8%E7%9A%84%E7%BD%91%E7%AB%99ID&amp;furl=%E6%96%87%E6%A1%A3%E5%9C%B0%E5%9D%80">http://ow365.cn/?i=您的网站ID&amp;furl=文档地址</a></p>
+<p>功能强大，使用简单，但是<strong>付费</strong>使用(可免费受限使用，如访问次数，广告显示等)，具体内容可以通过<a target="_blank" rel="noopener" href="http://www.officeweb365.com/">OfficeWeb365</a><br>查看。</p>
+</li>
+</ol>
+<h3 id="永中云转换"><a href="#永中云转换" class="headerlink" title="永中云转换"></a>永中云转换</h3><p>1.支持doc/docx、xls/xlsx、ppt/pptx和pdf、压缩文件等20多种常用Office文档转换为高度兼容的高清网页，实现快捷查阅文档内容，提升工作效率。<br>2.支持移动阅读，针对移动设备特别优化，支持内容自适应屏幕大小和方向；支持文档缩略图，可将文档首页内容直观呈现。<br>3.转换效率高，可同时支持多个文档同时转换，支持多核多线程并发访问（需服务器和网络环境支持）。<br>4.开发部署简单高效，只需要传入待转换的文档和相关参数，系统自动返回转换后文件URL。<br>5.支持本地化部署和互联网调用，支持Linux和Windows等多种操作系统。<br>6.基于自主可控Office核心技术，支持特定需求的定制开发。<br>7.支持在线编辑，实现文档编辑功能，使用简单，便捷（<strong>付费</strong>）。</p>
+<p>  可以使用部署在公有云上的服务，客户端注册后获取相关服务信息，在互联网上直接远程调用永中DCS转换接口，获取文档预览效果（通过webView加载即可）或目标格式的转换文档。<br>同时支持在线编辑等定制化业务，详细内容可查看<a target="_blank" rel="noopener" href="http://www.yozodcs.com/index.html">永中DCS</a></p>
+<h3 id="腾讯TBS浏览服务"><a href="#腾讯TBS浏览服务" class="headerlink" title="腾讯TBS浏览服务"></a>腾讯TBS浏览服务</h3><p>  依托 X5 内核强大的能力，TBS 致力于提供优化移动端浏览体验的整套解决方案。 TBS 虽然核心在于提供一套 SDK 解决传统 WebView 的诸多使用问题。<br>但是，利用其增强浏览能力，我们还能够使用这套 SDK 实现应用内的文件浏览功能、视频播放功能等。<br>  使用简单集成TBS提供的SDK，详细集成操作请参考<a target="_blank" rel="noopener" href="https://x5.tencent.com/tbs/index.html">TBS腾讯浏览服务</a>。<br>  对于浏览文件这方面官方没有提供完善使用文档和Demo，可以借鉴<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3f57d640b24d">这篇文章</a>,集成TBS的SDK后打开本地文件的代码很简单：</p>
+<pre><code> Bundle bundle = new Bundle();
+  bundle.putString(&quot;filePath&quot;, getLocalFile().getPath());
+  bundle.putString(&quot;tempPath&quot;, Environment.getExternalStorageDirectory().getPath());
+  boolean result = mTbsReaderView.preOpen(parseFormat(mFileName), false);
+  if (result) &#123;
+    mTbsReaderView.openFile(bundle);
+  &#125;
+</code></pre>
+<p>  缺点是只能打开本地文件，需要先下载。</p>
+<h2 id="集成开源或者第三方的本地解析SDK"><a href="#集成开源或者第三方的本地解析SDK" class="headerlink" title="集成开源或者第三方的本地解析SDK"></a>集成开源或者第三方的本地解析SDK</h2><h3 id="免费开源SDK"><a href="#免费开源SDK" class="headerlink" title="免费开源SDK"></a>免费开源SDK</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://android.googlesource.com/platform/external/pdfium">pdfium</a> Google 的开源项目，也是 Chrome 浏览器的PDF渲染引擎，初始代码来自国内知名PDF技术公司「福昕」。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/barteksc/AndroidPdfViewer">AndroidPdfViewer</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/barteksc/PdfiumAndroid">PdfiumAndroid</a> 基于 pdfium 的 Android 平台实现方式，支持 PDF 文档的应用内预览，支持动画、缩放、手势和双击操作。</li>
+<li><a target="_blank" rel="noopener" href="https://mupdf.com/">MuPDF</a></li>
+</ul>
+<h3 id="付费SDK"><a href="#付费SDK" class="headerlink" title="付费SDK"></a>付费SDK</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.foxitsoftware.cn/products/sdk/PDFsdk/android">Foxit PDF SDK</a> 福昕出品，性能稳定，功能强大</li>
+<li><a target="_blank" rel="noopener" href="https://plugpdf.com/">plugPDF</a> 来自国外的一个付费 SDK，使用简单，只需三步即可集成到自己的应用中并使用。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="吴政通 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.jpg" alt="吴政通 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/office%E5%8A%9E%E5%85%AC%E6%96%87%E6%A1%A3/" rel="tag"><i class="fa fa-tag"></i> office办公文档</a>
+              <a href="/tags/webView/" rel="tag"><i class="fa fa-tag"></i> webView</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/10/11/android/AndroidaAnnotations/" rel="prev" title="AndroidAnnotations">
+      <i class="fa fa-chevron-left"></i> AndroidAnnotations
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/03/android/Dragger2/" rel="next" title="Dagger2-Android依赖注入框架的学习">
+      Dagger2-Android依赖注入框架的学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView-%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA"><span class="nav-number">1.</span> <span class="nav-text">WebView 网页显示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Google-Doc"><span class="nav-number">1.1.</span> <span class="nav-text">Google Doc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Office-Web362"><span class="nav-number">1.2.</span> <span class="nav-text">Office Web362</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B8%E4%B8%AD%E4%BA%91%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.</span> <span class="nav-text">永中云转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%85%BE%E8%AE%AFTBS%E6%B5%8F%E8%A7%88%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.4.</span> <span class="nav-text">腾讯TBS浏览服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E5%BC%80%E6%BA%90%E6%88%96%E8%80%85%E7%AC%AC%E4%B8%89%E6%96%B9%E7%9A%84%E6%9C%AC%E5%9C%B0%E8%A7%A3%E6%9E%90SDK"><span class="nav-number">2.</span> <span class="nav-text">集成开源或者第三方的本地解析SDK</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%8D%E8%B4%B9%E5%BC%80%E6%BA%90SDK"><span class="nav-number">2.1.</span> <span class="nav-text">免费开源SDK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%98%E8%B4%B9SDK"><span class="nav-number">2.2.</span> <span class="nav-text">付费SDK</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="吴政通"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">吴政通</p>
+  <div class="site-description" itemprop="description">合抱之木，生于毫末；九层之台，起于垒土；千里之行，始于足下</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element">
+    <a onclick="Chatra('openChat', true);"><i class="fa fa-comment"></i>
+    Chat
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xmc-w" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xmc-w" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:362266706@qq.com" title="邮箱 → mailto:362266706@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>邮箱</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">吴政通</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_lines.min.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+  <script>
+    (function(d, w, c) {
+      w.ChatraID = '8iPciicGsZFSwJxWM';
+      var s = d.createElement('script');
+      w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+      };
+      s.async = true;
+      s.src = 'https://call.chatra.io/chatra.js';
+      if (d.head) d.head.appendChild(s);
+    })(document, window, 'Chatra');
+  </script>
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b972ac4034a5029e5b6e',
+      clientSecret: '5e08de529a15ee0b7f5680de9136e93e48a0f1b2',
+      repo        : 'wuzhengtong.github.io',
+      owner       : 'xmc-w',
+      admin       : ['xmc-w'],
+      id          : '9ecd541e9045b04e2412e7abb9af1273',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
