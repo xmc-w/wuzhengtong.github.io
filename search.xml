@@ -575,12 +575,12 @@ public interface BookmarkClient &#123;
     <title>Dagger2-Android依赖注入框架的学习</title>
     <url>/2021/02/03/android/Dragger2/</url>
     <content><![CDATA[<p>通过学习如何使用它，来体验它给android编程带来的优点。</p>
-<blockquote>
-<p>官方的使用文档<br><a href="https://google.github.io/dagger//">https://google.github.io/dagger//</a></p>
-</blockquote>
 <p><img src="https://xmc-myblog-1257745026.cos.ap-chengdu.myqcloud.com/dragger2.png" alt="mark"></p>
 <a id="more"></a>
 <hr>
+<blockquote>
+<p>官方的使用文档<br><a href="https://google.github.io/dagger//">https://google.github.io/dagger//</a></p>
+</blockquote>
 <blockquote>
 <p>转载并修改自，天天博客<br><a href="http://www.cnblogs.com/tiantianbyconan/p/5092525.html">http://www.cnblogs.com/tiantianbyconan/p/5092525.html</a></p>
 </blockquote>
